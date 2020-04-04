@@ -16,8 +16,8 @@ import java.io.Serializable;
  * @author haungyaning
  * @since 2020-04-04
  */
-@TableName("mooc_user_t")
-public class MoocUserT extends Model<MoocUserT> {
+@TableName("user_t")
+public class UserT extends Model<UserT> {
 
     private static final long serialVersionUID = 1L;
 
