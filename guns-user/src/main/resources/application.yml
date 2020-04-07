@@ -28,11 +28,11 @@ mybatis-plus:
 
 spring:
   application:
-    name: meeting-gateway
+    name: meeting-user
   dubbo:
     server: true
     registry: zookeeper://linux01:2181
-    protocal:
+    protocol:
       name: dubbo
       port: 20881
   datasource:

@@ -1,12 +1,15 @@
 package com.stylefeng.guns.rest.modular.vo;
 
 
+import lombok.Data;
+
 /**
  * @Author: HYN
  * @Description:
  * @Date: 2020/4/3 12:52 下午
  * @Modified By:
  */
+@Data
 public class ResponseVO<M> {
 
     /**
@@ -24,6 +27,21 @@ public class ResponseVO<M> {
      */
     private M data;
 
+    /**
+     * 首图地址
+     */
+    private String imgPre;
+
+    /**
+     * 当前页
+     */
+    private int nowPage;
+
+    /**
+     * 总页数
+     */
+    private int totalPage;
+
     private ResponseVO() {}
 
     /**
@@ -36,6 +54,31 @@ public class ResponseVO<M> {
         ResponseVO<M> responseVO = new ResponseVO<>();
         responseVO.setStatus(0);
         responseVO.setData(m);
+        return responseVO;
+    }
+
+    /**
+     * 带首图地址的返回
+     * @param imgPre
+     * @param m
+     * @param <M>
+     * @return
+     */
+    public static <M> ResponseVO<M> success(String imgPre, M m) {
+        ResponseVO<M> responseVO = new ResponseVO<>();
+        responseVO.setStatus(0);
+        responseVO.setData(m);
+        responseVO.setImgPre(imgPre);
+        return responseVO;
+    }
+
+    public static <M> ResponseVO<M> success(int nowPage, int totalPage, String imgPre, M m) {
+        ResponseVO<M> responseVO = new ResponseVO<>();
+        responseVO.setStatus(0);
+        responseVO.setData(m);
+        responseVO.setImgPre(imgPre);
+        responseVO.setNowPage(nowPage);
+        responseVO.setTotalPage(totalPage);
         return responseVO;
     }
 
@@ -70,38 +113,5 @@ public class ResponseVO<M> {
         responseVO.setStatus(999);
         responseVO.setMsg(msg);
         return responseVO;
-    }
-
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public M getData() {
-        return data;
-    }
-
-    public void setData(M data) {
-        this.data = data;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + "ResponseVO{" +
-                "status=" + status +
-                ", msg='" + msg + '\'' +
-                ", data=" + data +
-                '}';
     }
 }

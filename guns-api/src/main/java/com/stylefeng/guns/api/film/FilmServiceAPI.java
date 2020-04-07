@@ -1,8 +1,6 @@
 package com.stylefeng.guns.api.film;
 
-import com.stylefeng.guns.api.film.vo.BannerVO;
-import com.stylefeng.guns.api.film.vo.FilmInfo;
-import com.stylefeng.guns.api.film.vo.FilmVO;
+import com.stylefeng.guns.api.film.vo.*;
 
 import java.util.List;
 
@@ -17,23 +15,45 @@ public interface FilmServiceAPI {
      * 获取banners
      * @return
      */
-    BannerVO getBanners();
+    List<BannerVO> getBanners();
 
     /**
      * 获取热门影片
-     * @param isLimit 是否要限制数量
-     * @param nums 数量
+     * @param isLimit 是否要限制数量，是否是首页
+     * @param nums
+     * @param nowPage
+     * @param sortId
+     * @param sourceId
+     * @param yearId
+     * @param catId
      * @return
      */
-    FilmVO getHotFilms(boolean isLimit, int nums);
+    FilmVO getHotFilms(boolean isLimit, int nums, int nowPage, int sortId, int sourceId, int yearId, int catId);
 
     /**
-     * 获取即将上映影片，按受欢迎程度排序
+     * 获取即将上映影片
      * @param isLimit
      * @param nums
+     * @param nowPage
+     * @param sortId
+     * @param sourceId
+     * @param yearId
+     * @param catId
      * @return
      */
-    FilmVO getSoonFilms(boolean isLimit, int nums);
+    FilmVO getSoonFilms(boolean isLimit, int nums, int nowPage, int sortId, int sourceId, int yearId, int catId);
+
+    /**
+     * 获取经典影片
+     * @param nums
+     * @param nowPage
+     * @param sortId
+     * @param sourceId
+     * @param yearId
+     * @param catId
+     * @return
+     */
+    FilmVO getClassicFilms(int nums, int nowPage, int sortId, int sourceId, int yearId, int catId);
 
     /**
      * 获取票房排行
@@ -52,4 +72,34 @@ public interface FilmServiceAPI {
      * @return
      */
     List<FilmInfo> getTop();
+
+    /*================获取影片条件接口==================*/
+
+    /**
+     * 分类条件
+     * @return
+     */
+    List<CatVO> getCats();
+
+    /**
+     * 片源条件
+     * @return
+     */
+    List<SourceVO> getSources();
+
+    /**
+     * 年代条件
+     * @return
+     */
+    List<YearVO> getYears();
+
+    /*==================================================*/
+    /**
+     * 根据影片id或名称获取影片详细信息
+     * @param searchType
+     * @param searchParam
+     * @return
+     */
+    FilmDetailVO getFilmDetail(int searchType, String searchParam);
+
 }

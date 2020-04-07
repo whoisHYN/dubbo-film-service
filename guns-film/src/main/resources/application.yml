@@ -28,13 +28,13 @@ mybatis-plus:
 
 spring:
   application:
-    name: meeting-gateway
+    name: meeting-film
   dubbo:
     server: true
     registry: zookeeper://linux01:2181
-    protocal:
+    protocol:
+      port: 20882
       name: dubbo
-      port: 20881
   datasource:
       url: jdbc:mysql://127.0.0.1:3306/guns_rest?autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8
       username: root

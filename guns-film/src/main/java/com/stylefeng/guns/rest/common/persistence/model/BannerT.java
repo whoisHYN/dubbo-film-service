@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * banner信息表
+ * banner(海报)信息表
  * </p>
  *
  * @author haungyaning
