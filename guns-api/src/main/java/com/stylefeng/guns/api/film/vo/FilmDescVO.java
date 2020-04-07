@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * @Author: HYN
- * @Description:
+ * @Description: 影片描述信息，对应开发文档中影片详情查询接口应答报文中data中的info04部分的biography和filmId
  * @Date: 2020/4/7 9:40 上午
  * @Modified By:
  */

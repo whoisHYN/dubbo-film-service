@@ -1,6 +1,8 @@
 package com.stylefeng.guns.rest.modular.film;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.rpc.RpcContext;
+import com.stylefeng.guns.api.film.FilmAsyncServiceAPI;
 import com.stylefeng.guns.api.film.FilmServiceAPI;
 import com.stylefeng.guns.api.film.vo.*;
 import com.stylefeng.guns.rest.modular.film.vo.FilmConditionVO;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * @Author: HYN
@@ -24,8 +28,17 @@ public class FilmController {
 
     private String imgPre = "http://img.meetingshop.cn/";
 
+    /**
+     * 同步调用
+     */
     @Reference(interfaceClass = FilmServiceAPI.class)
     private FilmServiceAPI filmServiceAPI;
+
+    /**
+     * 异步调用
+     */
+    @Reference(interfaceClass = FilmAsyncServiceAPI.class, async = true)
+    private FilmAsyncServiceAPI filmAsyncServiceAPI;
 
     /**
      * 1、功能聚合【API聚合】
@@ -58,7 +71,7 @@ public class FilmController {
     }
 
     /**
-     * 获取查询电影的条件列表
+     * 影片条件列表，包括类型、年代、来源地等
      * @param catId
      * @param sourceId
      * @param yearId
@@ -156,13 +169,16 @@ public class FilmController {
     }
 
 
+    /**
+     * 根据showType查询，按页显示热映影片、即将上映和经典影片
+     * @param filmRequestVo
+     * @return
+     */
     @GetMapping("getFilms")
     public ResponseVO<?> getFilms(FilmRequestVO filmRequestVo) {
 
-        String imgPre = "http://img.meetingshop.cn/";
-
         FilmVO filmVO;
-        //根据showType判断影片查询类型，1-热映 2-即将上映 3-经典，默认热映
+        //根据showType判断影片查询类型，1-热映 2-即将上映 3-经典，默认1-热映
         switch (filmRequestVo.getShowType()) {
             case 2:
                 filmVO = filmServiceAPI.getSoonFilms(false, filmRequestVo.getPageSize(),
@@ -187,11 +203,54 @@ public class FilmController {
                 imgPre, filmVO.getFilmInfos());
     }
 
+    /**
+     * 查询影片详情
+     * @param searchParam
+     * @param searchType
+     * @return
+     */
     @GetMapping("films/{searchParam}")
     public ResponseVO<?> films(@PathVariable("searchParam") String searchParam,
-                               int searchType) {
+                               int searchType) throws ExecutionException, InterruptedException {
         //根据searchType，判断查询类型，1-按名称查询(redis或数据库)  1-按id查询(elasticSearch)
+        //此对象还差一个info04字段信息，下面进行查询
         FilmDetailVO filmDetailVO = filmServiceAPI.getFilmDetail(searchType, searchParam);
-        return null;
+        if (filmDetailVO == null) {
+            return ResponseVO.serviceFail("没有可查询的影片");
+        } else if (filmDetailVO.getFilmId() == null || filmDetailVO.getFilmId().trim().length() == 0) {
+            return ResponseVO.serviceFail("没有可查询的影片");
+        }
+        String filmId = filmDetailVO.getFilmId();
+        //info04对应InfoRequestVO对象,其中又包含ActorRequestVO，ImgVO，biography和filmId
+        InfoRequestVO infoRequestVO = new InfoRequestVO();
+
+        //异步获取影片描述信息
+        Future<FilmDescVO> filmDescFuture = RpcContext.getContext().asyncCall(
+                () -> filmAsyncServiceAPI.getFilmDesc(filmId));
+
+        //异步获取影片图片信息
+        Future<ImgVO> imgFuture = RpcContext.getContext().asyncCall(
+                () -> filmAsyncServiceAPI.getImgs(filmId));
+
+        //获取影片演员信息,对应ActorRequestVO对象，包含director和actors
+        ActorRequestVO actorRequestVO = new ActorRequestVO();
+        Future<ActorVO> directorFuture = RpcContext.getContext().asyncCall(
+                () -> filmAsyncServiceAPI.getDirector(filmId));
+        Future<List<ActorVO>> actorsFuture = RpcContext.getContext().asyncCall(
+                () -> filmAsyncServiceAPI.getActors(filmId));
+
+        actorRequestVO.setDirector(directorFuture.get());
+        actorRequestVO.setActors(actorsFuture.get());
+
+        //拼装infoRequestVO
+        infoRequestVO.setActors(actorRequestVO);
+        infoRequestVO.setBiography(filmDescFuture.get().getBiography());
+        infoRequestVO.setFilmId(filmId);
+        infoRequestVO.setImgVO(imgFuture.get());
+
+        //拼装filmDetailVO
+        filmDetailVO.setInfo04(infoRequestVO);
+
+        return ResponseVO.success(imgPre, filmDetailVO);
     }
 }

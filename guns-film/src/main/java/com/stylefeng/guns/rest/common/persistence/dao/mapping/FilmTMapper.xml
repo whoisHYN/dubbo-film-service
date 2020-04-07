@@ -21,6 +21,7 @@
 
     <select id="getFilmDetailByName" parameterType="string" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
         select
+            film.uuid as filmId,
             film.film_name as filmName,
             info.film_en_name as filmEngName,
             film.img_address as imgAddress,
@@ -40,6 +41,7 @@
 
     <select id="getFilmDetailById" parameterType="string" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
         select
+            film.uuid as filmId,
             film.film_name as filmName,
             info.film_en_name as filmEngName,
             film.img_address as imgAddress,

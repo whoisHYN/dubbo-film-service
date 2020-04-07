@@ -15,6 +15,7 @@ public class FilmDetailVO implements Serializable {
 
     private static final long serialVersionUID = 4255779276000887787L;
 
+    private String filmId;
     private String filmName;
     private String filmEngName;
     private String imgAddress;
@@ -24,4 +25,5 @@ public class FilmDetailVO implements Serializable {
     private String info01;
     private String info02;
     private String info03;
+    private InfoRequestVO info04;
 }

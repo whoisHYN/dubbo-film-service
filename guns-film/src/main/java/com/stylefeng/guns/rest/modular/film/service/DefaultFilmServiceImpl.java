@@ -24,16 +24,24 @@ import java.util.List;
 @Service(interfaceClass = FilmServiceAPI.class)
 public class DefaultFilmServiceImpl implements FilmServiceAPI {
 
+    private final BannerTMapper bannerTMapper;
+    private final FilmTMapper filmTMapper;
+    private final CatDictTMapper catDictTMapper;
+    private final SourceDictTMapper sourceDictTMapper;
+    private final YearDictTMapper yearDictTMapper;
+    private final ActorTMapper actorTMapper;
+    private final FilmInfoTMapper filmInfoTMapper;
+
     @Autowired
-    private BannerTMapper bannerTMapper;
-    @Autowired
-    private FilmTMapper filmTMapper;
-    @Autowired
-    private CatDictTMapper catDictTMapper;
-    @Autowired
-    private SourceDictTMapper sourceDictTMapper;
-    @Autowired
-    private YearDictTMapper yearDictTMapper;
+    public DefaultFilmServiceImpl(BannerTMapper bannerTMapper, FilmTMapper filmTMapper, CatDictTMapper catDictTMapper, SourceDictTMapper sourceDictTMapper, YearDictTMapper yearDictTMapper, ActorTMapper actorTMapper, FilmInfoTMapper filmInfoTMapper) {
+        this.bannerTMapper = bannerTMapper;
+        this.filmTMapper = filmTMapper;
+        this.catDictTMapper = catDictTMapper;
+        this.sourceDictTMapper = sourceDictTMapper;
+        this.yearDictTMapper = yearDictTMapper;
+        this.actorTMapper = actorTMapper;
+        this.filmInfoTMapper = filmInfoTMapper;
+    }
 
     /**
      * 获取电影海报列表
@@ -373,10 +381,84 @@ public class DefaultFilmServiceImpl implements FilmServiceAPI {
         FilmDetailVO filmDetailVO;
         //searchType,1-按名称查找  2-按id查找
         if (searchType == 1) {
-            filmDetailVO = filmTMapper.getFilmDetailByName(searchParam);
+            //sql语句中用"like"进行模糊匹配
+            filmDetailVO = filmTMapper.getFilmDetailByName("%" + searchParam + "%");
         } else {
             filmDetailVO = filmTMapper.getFilmDetailById(searchParam);
         }
         return filmDetailVO;
+    }
+
+    /**
+     * 从数据库根据filmId查询 FilmInfoT 对象
+     * @param filmId
+     * @return
+     */
+    private FilmInfoT getFilmInfo(String filmId) {
+        FilmInfoT filmInfoT = new FilmInfoT();
+        filmInfoT.setFilmId(filmId);
+        return filmInfoTMapper.selectOne(filmInfoT);
+    }
+
+    /**
+     * 获取影片描述信息
+     * @param filmId
+     * @return
+     */
+    @Override
+    public FilmDescVO getFilmDesc(String filmId) {
+        FilmDescVO filmDescVO = new FilmDescVO();
+        FilmInfoT filmInfoT = getFilmInfo(filmId);
+        filmDescVO.setBiography(filmInfoT.getBiography());
+        filmDescVO.setFilmId(filmId);
+        return filmDescVO;
+    }
+
+    /**
+     * 获取影片图片地址
+     * @param filmId
+     * @return
+     */
+    @Override
+    public ImgVO getImgs(String filmId) {
+        ImgVO imgVO = new ImgVO();
+        FilmInfoT filmInfoT = getFilmInfo(filmId);
+        String filmImgs = filmInfoT.getFilmImgs();
+        //图片地址是5个以","分割的url
+        String[] imgs = filmImgs.split(",");
+        int i = 0;
+        imgVO.setMainImg(imgs[i++]);
+        imgVO.setImg01(imgs[i++]);
+        imgVO.setImg02(imgs[i++]);
+        imgVO.setImg03(imgs[i++]);
+        imgVO.setImg04(imgs[i]);
+        return imgVO;
+    }
+
+    /**
+     * 获取导演信息
+     * @param filmId
+     * @return
+     */
+    @Override
+    public ActorVO getDirector(String filmId) {
+        ActorVO actorVO = new ActorVO();
+        FilmInfoT filmInfoT = getFilmInfo(filmId);
+        //获取导演编号
+        Integer directorId = filmInfoT.getDirectorId();
+        ActorT actorT = actorTMapper.selectById(directorId);
+        actorVO.setDirectorName(actorT.getActorName());
+        actorVO.setImgAddress(actorT.getActorImg());
+        return actorVO;
+    }
+
+    /**
+     * 获取演员信息
+     * @param filmId
+     * @return
+     */
+    @Override
+    public List<ActorVO> getActors(String filmId) {
+        return actorTMapper.getActors(filmId);
     }
 }
