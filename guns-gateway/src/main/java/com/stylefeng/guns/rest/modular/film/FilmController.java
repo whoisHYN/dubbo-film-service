@@ -26,7 +26,7 @@ import java.util.concurrent.Future;
 @RequestMapping("/film/")
 public class FilmController {
 
-    private String imgPre = "http://img.meetingshop.cn/";
+    private static final String IMG_PRE = "http://img.meetingshop.cn/";
 
     /**
      * 同步调用
@@ -67,7 +67,7 @@ public class FilmController {
         filmIndexVO.setExpectRanking(filmServiceAPI.getExpectRanking());
         // 获取前一百
         filmIndexVO.setTop100(filmServiceAPI.getTop());
-        return ResponseVO.success(imgPre, filmIndexVO);
+        return ResponseVO.success(IMG_PRE, filmIndexVO);
     }
 
     /**
@@ -200,7 +200,7 @@ public class FilmController {
                 break;
         }
         return ResponseVO.success(filmVO.getNowPage(), filmVO.getTotalPage(),
-                imgPre, filmVO.getFilmInfos());
+                IMG_PRE, filmVO.getFilmInfos());
     }
 
     /**
@@ -251,6 +251,6 @@ public class FilmController {
         //拼装filmDetailVO
         filmDetailVO.setInfo04(infoRequestVO);
 
-        return ResponseVO.success(imgPre, filmDetailVO);
+        return ResponseVO.success(IMG_PRE, filmDetailVO);
     }
 }

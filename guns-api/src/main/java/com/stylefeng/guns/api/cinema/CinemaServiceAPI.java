@@ -49,7 +49,7 @@ public interface CinemaServiceAPI {
      * @param hallTypeId
      * @return
      */
-    List<HallTypeVO> hetHallTypes(int hallTypeId);
+    List<HallTypeVO> getHallTypes(int hallTypeId);
 
     /**
      *  5. 根据影院编号获取影院信息
@@ -63,14 +63,14 @@ public interface CinemaServiceAPI {
      * @param cinemaId
      * @return
      */
-    List<FilmInfoVO> getFilmInfoByCinemaId(int cinemaId);
+    List<FilmInfoVO> getFilmInfosByCinemaId(int cinemaId);
 
     /**
      * 7. 根据放映场次ID获取场次信息
      * @param fieldId
      * @return
      */
-    FilmFieldVO getFilmField(int fieldId);
+    HallInfoVO getHallInfoByFieldId(int fieldId);
 
     /**
      * 8. 根据放映场次查询播放的电影编号，然后根据电影编号获取对应的电影信息

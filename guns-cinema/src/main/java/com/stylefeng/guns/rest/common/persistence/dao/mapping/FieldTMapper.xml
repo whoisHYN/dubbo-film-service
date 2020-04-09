@@ -14,4 +14,72 @@
         <result column="price" property="price" />
     </resultMap>
 
+    <!--一对多查询-->
+    <resultMap id="getFilmInfoMap" type="com.stylefeng.guns.api.cinema.vo.FilmInfoVO">
+        <result column="film_id" property="filmId"/>
+        <result column="film_name" property="filmName"/>
+        <result column="film_length" property="filmLength"/>
+        <result column="film_language" property="filmType"/>
+        <result column="film_cats" property="filmCats"/>
+        <result column="actors" property="actors"/>
+        <result column="img_address" property="imgAddress"/>
+        <collection property="filmFields" ofType="com.stylefeng.guns.api.cinema.vo.FilmFieldVO">
+            <result column="UUID" property="fieldId"/>
+            <result column="begin_time" property="beginTime"/>
+            <result column="end_time" property="endTime"/>
+            <result column="film_language" property="language"/>
+            <result column="hall_name" property="hallName"/>
+            <result column="price" property="price"/>
+        </collection>
+    </resultMap>
+
+    <select id="getFilmInfos" parameterType="int" resultMap="getFilmInfoMap">
+        -- 联合查询某个影院的所有场次(用这个)
+        select
+            info.film_id,
+            info.film_name,
+            info.film_length,
+            info.film_language,
+            info.film_cats,
+            info.actors,
+            info.img_address,
+            f.UUID,
+            f.begin_time,
+            f.end_time,
+            f.hall_name,
+            f.price
+        from hall_film_info_t info
+        LEFT JOIN field_t f
+        ON f.film_id = info.film_id
+        and f.cinema_id=#{cinemaId};
+    </select>
+
+    <select id="getHallInfo" parameterType="int" resultType="com.stylefeng.guns.api.cinema.vo.HallInfoVO">
+        -- 联表查询HallInfo
+        select
+            f.UUID as hallFieldId,
+            f.hall_name as hallName,
+            f.price as price,
+            hall.seat_address as seatFile
+        from hall_dict_t hall, field_t f
+        where hall.UUID = f.hall_id
+        and f.UUID = #{fieldId};
+
+    </select>
+
+    <select id="getFilmInfoById" parameterType="int" resultType="com.stylefeng.guns.api.cinema.vo.FilmInfoVO">
+        -- 联表查询电影信息FIlmInfoVO
+        select
+            info.film_id as filmId,
+            info.film_name as filmName,
+            info.film_language as filmType,
+            info.img_address as imgAddress,
+            info.film_cats as filmCats,
+            info.actors as actors,
+            info.film_length as filmLength
+        from hall_film_info_t info,field_t f
+        WHERE info.film_id = f.film_id
+        and f.UUID = #{fieldId};
+    </select>
+
 </mapper>

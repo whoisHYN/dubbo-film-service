@@ -46,7 +46,7 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
     }
 
     /**
-     * 1. 根据CinemaQueryVO穿影院列表
+     * 1. 根据CinemaQueryVO查询影院列表
      * @param cinemaQueryVO
      * @return
      */
@@ -110,6 +110,8 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
             BrandVO brandVO = new BrandVO();
             brandVO.setBrandId(brandDictT1.getUuid() + "");
             brandVO.setBrandName(brandDictT1.getShowName());
+            //此字段为包装类型，不设置的话就为空
+            brandVO.setActive(false);
             if (flag) {
                 if (brandDictT1.getUuid() == 99) {
                     brandVO.setActive(true);
@@ -143,6 +145,7 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
             AreaVO areaVO = new AreaVO();
             areaVO.setAreaName(areaDictT1.getShowName());
             areaVO.setAreaId(areaDictT1.getUuid() + "");
+            areaVO.setActive(false);
             if (flag) {
                 if (areaDictT1.getUuid() == 99) {
                     areaVO.setActive(true);
@@ -163,7 +166,7 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
      * @return
      */
     @Override
-    public List<HallTypeVO> hetHallTypes(int hallTypeId) {
+    public List<HallTypeVO> getHallTypes(int hallTypeId) {
         List<HallTypeVO> result = new ArrayList<>();
         boolean flag = false;
         HallDictT hallDictT = hallDictTMapper.selectById(hallTypeId);
@@ -175,6 +178,7 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
             HallTypeVO hallTypeVO = new HallTypeVO();
             hallTypeVO.setHallTypeName(hallDictT1.getShowName());
             hallTypeVO.setHallTypeId(hallDictT1.getUuid() + "");
+            hallTypeVO.setActive(false);
             if (flag) {
                 if (hallDictT1.getUuid() == 99) {
                     hallTypeVO.setActive(true);
@@ -216,18 +220,18 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
      * @return
      */
     @Override
-    public List<FilmInfoVO> getFilmInfoByCinemaId(int cinemaId) {
-        return null;
+    public List<FilmInfoVO> getFilmInfosByCinemaId(int cinemaId) {
+        return fieldTMapper.getFilmInfos(cinemaId);
     }
 
     /**
-     * 7. 根据放映场次ID获取场次信息
+     * 7. 根据放映场次ID获取影厅信息
      * @param fieldId
      * @return
      */
     @Override
-    public FilmFieldVO getFilmField(int fieldId) {
-        return null;
+    public HallInfoVO getHallInfoByFieldId(int fieldId) {
+        return fieldTMapper.getHallInfo(fieldId);
     }
 
     /**
@@ -237,6 +241,6 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
      */
     @Override
     public FilmInfoVO getFilmInfoByFieldId(int fieldId) {
-        return null;
+        return fieldTMapper.getFilmInfoById(fieldId);
     }
 }

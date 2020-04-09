@@ -2,6 +2,8 @@ package com.stylefeng.guns.api.cinema.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Author: HYN
  * @Description:
@@ -9,7 +11,8 @@ import lombok.Data;
  * @Modified By:
  */
 @Data
-public class CinemaVO {
+public class CinemaVO implements Serializable {
+    private static final long serialVersionUID = 740392238251003697L;
     private String uuid;
     private String cinemaName;
     private String address;

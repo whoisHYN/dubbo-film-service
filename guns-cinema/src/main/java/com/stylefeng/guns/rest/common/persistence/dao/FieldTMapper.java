@@ -1,7 +1,12 @@
 package com.stylefeng.guns.rest.common.persistence.dao;
 
+import com.stylefeng.guns.api.cinema.vo.FilmInfoVO;
+import com.stylefeng.guns.api.cinema.vo.HallInfoVO;
 import com.stylefeng.guns.rest.common.persistence.model.FieldT;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +18,24 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
  */
 public interface FieldTMapper extends BaseMapper<FieldT> {
 
+    /**
+     * 根据cinemaId查询该影院所有电影及对应场次
+     * @param cinemaId
+     * @return
+     */
+    List<FilmInfoVO> getFilmInfos(@Param("cinemaId") int cinemaId);
+
+    /**
+     * 根据fieldId查询影厅场次信息
+     * @param fieldId
+     * @return
+     */
+    HallInfoVO getHallInfo(@Param("fieldId") int fieldId);
+
+    /**
+     * 根据fieldId获取电影信息FilmInfoVO
+     * @param fieldId
+     * @return
+     */
+    FilmInfoVO getFilmInfoById(@Param("fieldId") int fieldId);
 }
