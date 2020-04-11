@@ -52,6 +52,11 @@
             <groupId>com.stylefeng</groupId>
             <artifactId>guns-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.stylefeng</groupId>
+            <artifactId>guns-service-util</artifactId>
+            <version>1.0.0</version>
+        </dependency>
         <!--log4j依赖-->
         <dependency>
             <groupId>log4j</groupId>
