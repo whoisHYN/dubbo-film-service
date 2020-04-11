@@ -1,7 +1,7 @@
 package com.stylefeng.guns.rest.common.persistence.dao;
 
-import com.stylefeng.guns.api.cinema.vo.FilmInfoVO;
-import com.stylefeng.guns.api.cinema.vo.HallInfoVO;
+import com.stylefeng.guns.rest.api.cinema.vo.FilmInfoVO;
+import com.stylefeng.guns.rest.api.cinema.vo.HallInfoVO;
 import com.stylefeng.guns.rest.common.persistence.model.FieldT;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;

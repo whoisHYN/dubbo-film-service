@@ -15,7 +15,7 @@
     </resultMap>
 
     <!--一对多查询-->
-    <resultMap id="getFilmInfoMap" type="com.stylefeng.guns.api.cinema.vo.FilmInfoVO">
+    <resultMap id="getFilmInfoMap" type="com.stylefeng.guns.rest.api.cinema.vo.FilmInfoVO">
         <result column="film_id" property="filmId"/>
         <result column="film_name" property="filmName"/>
         <result column="film_length" property="filmLength"/>
@@ -23,7 +23,7 @@
         <result column="film_cats" property="filmCats"/>
         <result column="actors" property="actors"/>
         <result column="img_address" property="imgAddress"/>
-        <collection property="filmFields" ofType="com.stylefeng.guns.api.cinema.vo.FilmFieldVO">
+        <collection property="filmFields" ofType="com.stylefeng.guns.rest.api.cinema.vo.FilmFieldVO">
             <result column="UUID" property="fieldId"/>
             <result column="begin_time" property="beginTime"/>
             <result column="end_time" property="endTime"/>
@@ -54,7 +54,7 @@
         and f.cinema_id=#{cinemaId};
     </select>
 
-    <select id="getHallInfo" parameterType="int" resultType="com.stylefeng.guns.api.cinema.vo.HallInfoVO">
+    <select id="getHallInfo" parameterType="int" resultType="com.stylefeng.guns.rest.api.cinema.vo.HallInfoVO">
         -- 联表查询HallInfo
         select
             f.UUID as hallFieldId,
@@ -67,7 +67,7 @@
 
     </select>
 
-    <select id="getFilmInfoById" parameterType="int" resultType="com.stylefeng.guns.api.cinema.vo.FilmInfoVO">
+    <select id="getFilmInfoById" parameterType="int" resultType="com.stylefeng.guns.rest.api.cinema.vo.FilmInfoVO">
         -- 联表查询电影信息FIlmInfoVO
         select
             info.film_id as filmId,

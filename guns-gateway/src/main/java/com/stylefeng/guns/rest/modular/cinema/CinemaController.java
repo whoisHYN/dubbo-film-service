@@ -2,10 +2,10 @@ package com.stylefeng.guns.rest.modular.cinema;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.stylefeng.guns.api.cinema.CinemaServiceAPI;
-import com.stylefeng.guns.api.cinema.vo.CinemaQueryVO;
-import com.stylefeng.guns.api.cinema.vo.CinemaVO;
-import com.stylefeng.guns.api.cinema.vo.HallInfoVO;
+import com.stylefeng.guns.rest.api.cinema.CinemaServiceAPI;
+import com.stylefeng.guns.rest.api.cinema.vo.CinemaQueryVO;
+import com.stylefeng.guns.rest.api.cinema.vo.CinemaVO;
+import com.stylefeng.guns.rest.api.cinema.vo.HallInfoVO;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaConditionResponseVO;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaFieldResponseVO;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaFieldsResponseVO;
@@ -26,8 +26,9 @@ public class CinemaController {
 
     private static final String IMG_PRE = "http://img.meetingshop.cn/";
 
-    @Reference(interfaceClass = CinemaServiceAPI.class, check = false)
+    @Reference(interfaceClass = CinemaServiceAPI.class, check = false, connections = 10)
     private CinemaServiceAPI cinemaServiceAPI;
+
 
     /**
      * 查询影院列表

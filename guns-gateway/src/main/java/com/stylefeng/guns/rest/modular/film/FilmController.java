@@ -2,9 +2,9 @@ package com.stylefeng.guns.rest.modular.film;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.rpc.RpcContext;
-import com.stylefeng.guns.api.film.FilmAsyncServiceAPI;
-import com.stylefeng.guns.api.film.FilmServiceAPI;
-import com.stylefeng.guns.api.film.vo.*;
+import com.stylefeng.guns.rest.api.film.FilmAsyncServiceAPI;
+import com.stylefeng.guns.rest.api.film.FilmServiceAPI;
+import com.stylefeng.guns.rest.api.film.vo.*;
 import com.stylefeng.guns.rest.modular.film.vo.FilmConditionVO;
 import com.stylefeng.guns.rest.modular.film.vo.FilmIndexVO;
 import com.stylefeng.guns.rest.modular.film.vo.FilmRequestVO;

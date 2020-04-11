@@ -1,9 +1,9 @@
 package com.stylefeng.guns.rest.modular.user;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.stylefeng.guns.api.user.UserAPI;
-import com.stylefeng.guns.api.user.vo.UserInfoModel;
-import com.stylefeng.guns.api.user.vo.UserModel;
+import com.stylefeng.guns.rest.api.user.UserAPI;
+import com.stylefeng.guns.rest.api.user.vo.UserInfoModel;
+import com.stylefeng.guns.rest.api.user.vo.UserModel;
 import com.stylefeng.guns.rest.common.CurrentUser;
 import com.stylefeng.guns.rest.modular.vo.ResponseVO;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +24,11 @@ public class UserController {
     @Reference(interfaceClass = UserAPI.class, check = false)
     private UserAPI userAPI;
 
+    /**
+     * 用户注册
+     * @param userModel
+     * @return
+     */
     @PostMapping("register")
     public ResponseVO<?> register(UserModel userModel) {
         if (userModel.getUsername() == null || userModel.getUsername().trim().length() == 0) {
@@ -40,6 +45,11 @@ public class UserController {
         }
     }
 
+    /**
+     * 检查用户名是否存在
+     * @param username
+     * @return
+     */
     @PostMapping("check")
     public ResponseVO<?> check(String username) {
         if (username != null && username.trim().length() != 0) {
@@ -51,6 +61,10 @@ public class UserController {
         }
     }
 
+    /**
+     * 用户登出
+     * @return
+     */
     @GetMapping("logout")
     public ResponseVO<?> logout() {
         /*
@@ -69,6 +83,10 @@ public class UserController {
         return ResponseVO.success("用户退出成功");
     }
 
+    /**
+     * 查询用户信息
+     * @return
+     */
     @GetMapping("getUserInfo")
     public ResponseVO<UserInfoModel> getUserInfo() {
         String userId = CurrentUser.getUser();
@@ -84,6 +102,11 @@ public class UserController {
         }
     }
 
+    /**
+     * 更新用户信息
+     * @param userInfoModel
+     * @return
+     */
     @PostMapping("updateUserInfo")
     public ResponseVO<?> updateUserInfo(UserInfoModel userInfoModel) {
         String userId = CurrentUser.getUser();

@@ -19,7 +19,7 @@
         <result column="film_status" property="filmStatus" />
     </resultMap>
 
-    <select id="getFilmDetailByName" parameterType="string" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
+    <select id="getFilmDetailByName" parameterType="string" resultType="com.stylefeng.guns.rest.api.film.vo.FilmDetailVO">
         select
             film.uuid as filmId,
             film.film_name as filmName,
@@ -39,7 +39,7 @@
         and film.film_name like #{filmName};
     </select>
 
-    <select id="getFilmDetailById" parameterType="string" resultType="com.stylefeng.guns.api.film.vo.FilmDetailVO">
+    <select id="getFilmDetailById" parameterType="string" resultType="com.stylefeng.guns.rest.api.film.vo.FilmDetailVO">
         select
             film.uuid as filmId,
             film.film_name as filmName,

@@ -1,8 +1,8 @@
 package com.stylefeng.guns.rest.modular.cinema.vo;
 
-import com.stylefeng.guns.api.cinema.vo.AreaVO;
-import com.stylefeng.guns.api.cinema.vo.BrandVO;
-import com.stylefeng.guns.api.cinema.vo.HallTypeVO;
+import com.stylefeng.guns.rest.api.cinema.vo.AreaVO;
+import com.stylefeng.guns.rest.api.cinema.vo.BrandVO;
+import com.stylefeng.guns.rest.api.cinema.vo.HallTypeVO;
 import lombok.Data;
 
 import java.util.List;

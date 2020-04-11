@@ -1,20 +1,25 @@
 package com.stylefeng.guns.rest.modular.cinema.service;
 
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.stylefeng.guns.api.cinema.CinemaServiceAPI;
-import com.stylefeng.guns.api.cinema.vo.*;
+import com.stylefeng.guns.rest.api.cinema.CinemaServiceAPI;
+import com.stylefeng.guns.rest.api.cinema.vo.*;
 import com.stylefeng.guns.rest.common.persistence.dao.*;
 import com.stylefeng.guns.rest.common.persistence.model.AreaDictT;
 import com.stylefeng.guns.rest.common.persistence.model.BrandDictT;
 import com.stylefeng.guns.rest.common.persistence.model.CinemaT;
 import com.stylefeng.guns.rest.common.persistence.model.HallDictT;
+import com.stylefeng.guns.rest.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.Jedis;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @Author: HYN
@@ -23,7 +28,7 @@ import java.util.List;
  * @Modified By:
  */
 @Component
-@Service(interfaceClass = CinemaServiceAPI.class)
+@Service(interfaceClass = CinemaServiceAPI.class, executes = 10)
 public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
 
     private final AreaDictTMapper areaDictTMapper;
@@ -33,17 +38,25 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
     private final HallDictTMapper hallDictTMapper;
     private final HallFilmInfoTMapper hallFilmInfoTMapper;
 
+    /**
+     * redis
+     */
+    private final RedisUtil redisUtil;
+
+
     @Autowired
     public DefaultCinemaServiceImpl(AreaDictTMapper areaDictTMapper, BrandDictTMapper brandDictTMapper,
                                     CinemaTMapper cinemaTMapper, FieldTMapper fieldTMapper,
-                                    HallDictTMapper hallDictTMapper, HallFilmInfoTMapper hallFilmInfoTMapper) {
+                                    HallDictTMapper hallDictTMapper, HallFilmInfoTMapper hallFilmInfoTMapper, RedisUtil redisUtil) {
         this.areaDictTMapper = areaDictTMapper;
         this.brandDictTMapper = brandDictTMapper;
         this.cinemaTMapper = cinemaTMapper;
         this.fieldTMapper = fieldTMapper;
         this.hallDictTMapper = hallDictTMapper;
         this.hallFilmInfoTMapper = hallFilmInfoTMapper;
+        this.redisUtil = redisUtil;
     }
+
 
     /**
      * 1. 根据CinemaQueryVO查询影院列表
@@ -92,12 +105,44 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
     }
 
     /**
-     * 2. 根据条件获取品牌列表，除了99，其他都是active
+     * 2. 根据条件获取品牌列表，除了99，其他都是active，先从redis中获取，没有的话去MySQL中获取
      * @param brandId
      * @return
      */
     @Override
     public List<BrandVO> getBrands(int brandId) {
+        try (Jedis jedis = redisUtil.getJedis()) {
+            List<BrandVO> brandList;
+
+            String brandKey = "brands:" + brandId + ":info:";
+            //先从redis中查询
+            String brandJson = jedis.get(brandKey);
+            if (!StringUtils.isBlank(brandJson)) {
+                brandList = JSON.parseArray(brandJson, BrandVO.class);
+            } else {
+                // 没有的话再从MySQL中查询
+                brandList = getBrandsFromDB(brandId);
+
+                //如果数据库中也不存在，为防止缓存穿透，则返回一个空值存入redis，为防止缓存雪崩(缓存大面积失效)
+                //过期时间需要加一个随机值
+                int randomTime = 60 * 60 + new Random().nextInt(100);
+                if (brandList != null) {
+                    jedis.setex(brandKey, randomTime, JSON.toJSONString(brandList));
+                } else {
+                    //
+                    jedis.setex(brandKey, randomTime, JSON.toJSONString(""));
+                }
+            }
+            return brandList;
+        }
+    }
+
+    /**
+     * 从数据库查询数据
+     * @param brandId
+     * @return
+     */
+    private List<BrandVO> getBrandsFromDB(int brandId) {
         List<BrandVO> result = new ArrayList<>();
         //标记是否为全部,如果brandId不存在或等于99，则为全部
         boolean flag = false;
@@ -133,6 +178,28 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
      */
     @Override
     public List<AreaVO> getAreas(int areaId) {
+        try (Jedis jedis = redisUtil.getJedis()) {
+            List<AreaVO> areaList;
+            String areaKey = "area:" + areaId + ":info:";
+            String areaJson = jedis.get(areaKey);
+            if (StringUtils.isNotEmpty(areaJson)) {
+                areaList = JSON.parseArray(areaJson, AreaVO.class);
+            } else {
+                areaList = getAreasFromDB(areaId);
+
+                int randomTime = 60 * 60 + new Random().nextInt(100);
+                if (areaList != null) {
+                    jedis.setex(areaKey, randomTime, JSON.toJSONString(areaList));
+                } else {
+                    jedis.setex(areaKey, randomTime, JSON.toJSONString(""));
+
+                }
+            }
+            return areaList;
+        }
+    }
+
+    private List<AreaVO> getAreasFromDB(int areaId) {
         List<AreaVO> result = new ArrayList<>();
 
         boolean flag = false;
@@ -167,6 +234,26 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
      */
     @Override
     public List<HallTypeVO> getHallTypes(int hallTypeId) {
+        try (Jedis jedis = redisUtil.getJedis()) {
+            List<HallTypeVO> hallTypeList;
+            String hallTypeKey = "hallType:" + hallTypeId + ":info:";
+            String hallTypeJson = jedis.get(hallTypeKey);
+            if (StringUtils.isNotEmpty(hallTypeJson)) {
+                hallTypeList = JSON.parseArray(hallTypeJson, HallTypeVO.class);
+            } else {
+                hallTypeList = getHallTypesFromDB(hallTypeId);
+                int randomTime = 60 * 60 + new Random().nextInt(100);
+                if (hallTypeList != null) {
+                    jedis.setex(hallTypeKey, randomTime, JSON.toJSONString(hallTypeList));
+                } else {
+                    jedis.setex(hallTypeKey, randomTime, JSON.toJSONString(""));
+                }
+            }
+            return hallTypeList;
+        }
+    }
+
+    private List<HallTypeVO> getHallTypesFromDB(int hallTypeId) {
         List<HallTypeVO> result = new ArrayList<>();
         boolean flag = false;
         HallDictT hallDictT = hallDictTMapper.selectById(hallTypeId);
@@ -193,11 +280,11 @@ public class DefaultCinemaServiceImpl implements CinemaServiceAPI {
         return result;
     }
 
-    /**
-     *  5. 根据影院编号获取影院信息
-     * @param cinemaId
-     * @return
-     */
+        /**
+         *  5. 根据影院编号获取影院信息
+         * @param cinemaId
+         * @return
+         */
     @Override
     public CinemaInfoVO getCinemaInfoById(int cinemaId) {
         CinemaInfoVO cinemaInfoVO = new CinemaInfoVO();
