@@ -6,6 +6,7 @@ import com.stylefeng.guns.rest.api.cinema.CinemaServiceAPI;
 import com.stylefeng.guns.rest.api.cinema.vo.CinemaQueryVO;
 import com.stylefeng.guns.rest.api.cinema.vo.CinemaVO;
 import com.stylefeng.guns.rest.api.cinema.vo.HallInfoVO;
+import com.stylefeng.guns.rest.api.order.OrderServiceAPI;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaConditionResponseVO;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaFieldResponseVO;
 import com.stylefeng.guns.rest.modular.cinema.vo.CinemaFieldsResponseVO;
@@ -26,9 +27,11 @@ public class CinemaController {
 
     private static final String IMG_PRE = "http://img.meetingshop.cn/";
 
-    @Reference(interfaceClass = CinemaServiceAPI.class, check = false, connections = 10)
+    @Reference(interfaceClass = CinemaServiceAPI.class, check = false)
     private CinemaServiceAPI cinemaServiceAPI;
 
+    @Reference(interfaceClass = OrderServiceAPI.class, check = false)
+    private OrderServiceAPI orderServiceAPI;
 
     /**
      * 查询影院列表
@@ -98,16 +101,16 @@ public class CinemaController {
     }
 
     @PostMapping("getFieldInfo")
-    public ResponseVO<?> getFieldInfo(Integer cinemaId, Integer filedId) {
+    public ResponseVO<?> getFieldInfo(Integer cinemaId, Integer fieldId) {
         try {
             CinemaFieldResponseVO fieldResponseVO = new CinemaFieldResponseVO();
-            HallInfoVO hallInfo = cinemaServiceAPI.getHallInfoByFieldId(filedId);
+            HallInfoVO hallInfo = cinemaServiceAPI.getHallInfoByFieldId(fieldId);
 
-            // TODO 先造几个销售的假数据，后续会对接订单接口
-            hallInfo.setSoldSeats("1,2,3");
+            // 对接订单接口
+            hallInfo.setSoldSeats(orderServiceAPI.getSoldSeatsByFieldId(fieldId));
 
             fieldResponseVO.setCinemaInfoVO(cinemaServiceAPI.getCinemaInfoById(cinemaId));
-            fieldResponseVO.setFilmInfoVO(cinemaServiceAPI.getFilmInfoByFieldId(filedId));
+            fieldResponseVO.setFilmInfoVO(cinemaServiceAPI.getFilmInfoByFieldId(fieldId));
             fieldResponseVO.setHallInfoVO(hallInfo);
 
             return ResponseVO.success(IMG_PRE, fieldResponseVO);

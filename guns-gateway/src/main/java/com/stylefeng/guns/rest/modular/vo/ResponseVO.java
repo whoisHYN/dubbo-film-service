@@ -35,12 +35,12 @@ public class ResponseVO<M> {
     /**
      * 当前页
      */
-    private int nowPage;
+    private Integer nowPage;
 
     /**
      * 总页数
      */
-    private int totalPage;
+    private Integer totalPage;
 
     private ResponseVO() {}
 

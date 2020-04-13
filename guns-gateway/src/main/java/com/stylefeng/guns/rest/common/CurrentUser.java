@@ -10,13 +10,16 @@ public class CurrentUser {
     /**
      * 线程绑定的存储空间
      */
-    private static final ThreadLocal<String> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<>();
 
     public static void setUser(String userId) {
-        threadLocal.set(userId);
+        THREAD_LOCAL.set(userId);
     }
 
     public static String getUser() {
-        return threadLocal.get();
+        String s = THREAD_LOCAL.get();
+        //手动remove防止内存泄漏
+        THREAD_LOCAL.remove();
+        return s;
     }
 }

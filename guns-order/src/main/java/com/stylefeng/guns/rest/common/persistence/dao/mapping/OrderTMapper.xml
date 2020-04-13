@@ -24,5 +24,43 @@
         where hall.UUID = f.hall_id
         and hall.UUID = #{fieldId};
     </select>
+    <select id="getOrderInfoByOrderId" parameterType="string" resultType="com.stylefeng.guns.rest.api.order.vo.OrderVO">
+        select
+            o.UUID as orderId,
+            hall.film_name as filmName,
+            CONCAT('今天',date_format(o.order_time,'%m月%d日'),' ',f.begin_time)as fieldTime,
+            c.cinema_name as cinemaName,
+            o.seats_name as seatsName,
+            o.order_price as orderPrice,
+            UNIX_TIMESTAMP(o.order_time )as orderTimestamp
+        from
+            order_t o, field_t f, hall_film_info_t hall, cinema_t c
+        where o.film_id = hall.film_id
+        and o.cinema_id = c.UUID
+        and o.field_id = f.UUID
+        and o.UUID = #{orderId}
+    </select>
+    <select id="getOrderInfosByUserId" parameterType="int" resultType="com.stylefeng.guns.rest.api.order.vo.OrderVO">
+        select
+            o.UUID as orderId,
+            hall.film_name as filmName,
+            CONCAT(date_format(o.order_time,'%y年%m月%d日'),' ',f.begin_time)as fieldTime,
+            c.cinema_name as cinemaName,
+            o.seats_name as seatsName,
+            o.order_price as orderPrice,
+            UNIX_TIMESTAMP(o.order_time )as orderTimestamp
+        from
+            order_t o, field_t f, hall_film_info_t hall, cinema_t c
+        where o.film_id = hall.film_id
+        and o.cinema_id = c.UUID
+        and o.field_id = f.UUID
+        and o.order_user = #{userId}
+    </select>
+    <select id="getSoldSeatsByFieldId" parameterType="int" resultType="java.lang.String">
+        select
+            GROUP_CONCAT(seats_ids)
+        from order_t
+        where field_id = #{fieldId}
+    </select>
 
 </mapper>

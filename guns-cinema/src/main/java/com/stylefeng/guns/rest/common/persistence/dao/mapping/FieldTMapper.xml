@@ -51,7 +51,7 @@
         from hall_film_info_t info
         LEFT JOIN field_t f
         ON f.film_id = info.film_id
-        and f.cinema_id=#{cinemaId};
+        and f.cinema_id=#{cinemaId}
     </select>
 
     <select id="getHallInfo" parameterType="int" resultType="com.stylefeng.guns.rest.api.cinema.vo.HallInfoVO">
@@ -63,7 +63,7 @@
             hall.seat_address as seatFile
         from hall_dict_t hall, field_t f
         where hall.UUID = f.hall_id
-        and f.UUID = #{fieldId};
+        and f.UUID = #{fieldId}
 
     </select>
 
@@ -79,7 +79,7 @@
             info.film_length as filmLength
         from hall_film_info_t info,field_t f
         WHERE info.film_id = f.film_id
-        and f.UUID = #{fieldId};
+        and f.UUID = #{fieldId}
     </select>
 
 </mapper>
