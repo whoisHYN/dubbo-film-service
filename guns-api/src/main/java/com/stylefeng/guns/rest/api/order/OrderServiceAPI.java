@@ -3,7 +3,6 @@ package com.stylefeng.guns.rest.api.order;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.stylefeng.guns.rest.api.order.vo.OrderVO;
 
-import java.util.List;
 
 /**
  * @Author: HYN
@@ -53,4 +52,25 @@ public interface OrderServiceAPI {
      * @return
      */
     String getSoldSeatsByFieldId(Integer fieldId);
+
+    /**
+     * 根据订单编号获取订单信息
+     * @param orderId
+     * @return
+     */
+    OrderVO getOrderInfoById(String orderId);
+
+    /**
+     * 是否支付成功
+     * @param orderId
+     * @return
+     */
+    boolean paySuccess(String orderId);
+
+    /**
+     * 是否支付失败
+     * @param orderId
+     * @return
+     */
+    boolean payFail(String orderId);
 }

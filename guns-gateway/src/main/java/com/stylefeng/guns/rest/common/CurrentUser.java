@@ -10,7 +10,7 @@ public class CurrentUser {
     /**
      * 线程绑定的存储空间
      */
-    private static final ThreadLocal<String> THREAD_LOCAL = new ThreadLocal<>();
+    private static final InheritableThreadLocal<String> THREAD_LOCAL = new InheritableThreadLocal<>();
 
     public static void setUser(String userId) {
         THREAD_LOCAL.set(userId);

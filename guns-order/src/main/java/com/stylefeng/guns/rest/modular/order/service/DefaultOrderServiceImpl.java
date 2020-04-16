@@ -206,4 +206,29 @@ public class DefaultOrderServiceImpl implements OrderServiceAPI {
             return orderTMapper.getSoldSeatsByFieldId(fieldId);
         }
     }
+
+    @Override
+    public OrderVO getOrderInfoById(String orderId) {
+        return orderTMapper.getOrderInfoByOrderId(orderId);
+    }
+
+    @Override
+    public boolean paySuccess(String orderId) {
+        OrderT orderT = new OrderT();
+        orderT.setUuid(orderId);
+        orderT.setOrderStatus(1);
+
+        Integer integer = orderTMapper.updateById(orderT);
+        return integer >= 1;
+    }
+
+    @Override
+    public boolean payFail(String orderId) {
+        OrderT orderT = new OrderT();
+        orderT.setUuid(orderId);
+        orderT.setOrderStatus(2);
+
+        Integer integer = orderTMapper.updateById(orderT);
+        return integer >= 1;
+    }
 }
